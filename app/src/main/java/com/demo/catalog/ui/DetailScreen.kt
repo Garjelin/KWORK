@@ -2,7 +2,9 @@ package com.demo.catalog.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,11 +31,18 @@ import coil3.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(state: DetailState, onBack: () -> Unit, onRetry: () -> Unit) {
+fun DetailScreen(state: DetailState, onBack: () -> Unit, onRetry: () -> Unit,
+    darkTheme: Boolean,
+    onDarkThemeChange: (Boolean) -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Товар") },
+                actions = {
+                    ThemeSwitch(darkTheme, onDarkThemeChange)
+                    Spacer(Modifier.width(8.dp))
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.testTag("back_button")) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")

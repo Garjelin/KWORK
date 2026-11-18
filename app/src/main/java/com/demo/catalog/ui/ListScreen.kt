@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,7 +39,12 @@ import com.demo.catalog.data.Product
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(state: ListState, onProductClick: (Int) -> Unit, onRetry: () -> Unit,
+fun ListScreen(
+    state: ListState,
+    onProductClick: (Int) -> Unit,
+    onRetry: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onCategorySelect: (String?) -> Unit,
     darkTheme: Boolean,
     onDarkThemeChange: (Boolean) -> Unit,
 ) {
@@ -60,12 +68,66 @@ fun ListScreen(state: ListState, onProductClick: (Int) -> Unit, onRetry: () -> U
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
-                    ProductList(state.products, onProductClick)
+                    SearchBar(state, onQueryChange, onCategorySelect)
+                    if (state.visible.isEmpty()) {
+                        Box(Modifier.fillMaxSize()) {
+                            Text(
+                                "Ничего не найдено",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.align(Alignment.Center).testTag("empty_result"),
+                            )
+                        }
+                    } else {
+                        ProductList(state.visible, onProductClick)
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun SearchBar(
+    state: ListState.Content,
+    onQueryChange: (String) -> Unit,
+    onCategorySelect: (String?) -> Unit,
+) {
+    OutlinedTextField(
+        value = state.query,
+        onValueChange = onQueryChange,
+        placeholder = { Text("Поиск по названию") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .testTag("search_field"),
+    )
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.testTag("category_chips"),
+    ) {
+        item {
+            FilterChip(
+                selected = state.category == null,
+                onClick = { onCategorySelect(null) },
+                label = { Text("Все") },
+                modifier = Modifier.testTag("chip_all"),
+            )
+        }
+        items(state.categories) { category ->
+            FilterChip(
+                selected = state.category == category,
+                onClick = { onCategorySelect(category) },
+                label = { Text(categoryLabel(category)) },
+                modifier = Modifier.testTag("chip_$category"),
+            )
+        }
+    }
+}
+
+private fun categoryLabel(category: String) =
+    category.replace('-', ' ').replaceFirstChar { it.uppercase() }
 
 @Composable
 private fun ProductList(products: List<Product>, onClick: (Int) -> Unit) {

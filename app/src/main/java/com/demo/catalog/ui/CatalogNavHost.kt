@@ -31,6 +31,8 @@ fun CatalogNavHost(darkTheme: Boolean, onDarkThemeChange: (Boolean) -> Unit) {
                 state = state,
                 onProductClick = { navController.navigate("detail/$it") },
                 onRetry = vm::load,
+                onQueryChange = vm::onQueryChange,
+                onCategorySelect = vm::onCategorySelect,
                 darkTheme = darkTheme,
                 onDarkThemeChange = onDarkThemeChange,
             )

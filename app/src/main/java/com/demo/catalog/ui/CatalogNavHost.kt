@@ -27,7 +27,11 @@ fun CatalogNavHost() {
                 initializer { ListViewModel(app().repository) }
             })
             val state by vm.state.collectAsStateWithLifecycle()
-            ListScreen(state = state, onProductClick = { navController.navigate("detail/$it") })
+            ListScreen(
+                state = state,
+                onProductClick = { navController.navigate("detail/$it") },
+                onRetry = vm::load,
+            )
         }
         composable(
             route = "detail/{id}",
@@ -37,7 +41,11 @@ fun CatalogNavHost() {
                 initializer { DetailViewModel(app().repository, createSavedStateHandle()) }
             })
             val state by vm.state.collectAsStateWithLifecycle()
-            DetailScreen(state = state, onBack = { navController.popBackStack() })
+            DetailScreen(
+                state = state,
+                onBack = { navController.popBackStack() },
+                onRetry = vm::load,
+            )
         }
     }
 }

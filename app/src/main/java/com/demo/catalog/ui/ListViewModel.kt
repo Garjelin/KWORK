@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.demo.catalog.data.Product
 import com.demo.catalog.data.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 sealed interface ListState {
     data object Loading : ListState
     data class Content(val products: List<Product>, val topTitle: String) : ListState
+    data class Error(val message: String) : ListState
 }
 
 class ListViewModel(private val repository: ProductRepository) : ViewModel() {
@@ -24,9 +26,15 @@ class ListViewModel(private val repository: ProductRepository) : ViewModel() {
     fun load() {
         _state.value = ListState.Loading
         viewModelScope.launch {
-            val products = repository.getProducts()
-            val top = products.maxBy { it.rating }
-            _state.value = ListState.Content(products, top.title)
+            _state.value = try {
+                val products = repository.getProducts()
+                val top = products.maxByOrNull { it.rating } ?: throw EmptyCatalogException()
+                ListState.Content(products, top.title)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                ListState.Error(e.toUserMessage())
+            }
         }
     }
 }

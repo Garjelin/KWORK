@@ -34,12 +34,13 @@ import com.demo.catalog.data.Product
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(state: ListState, onProductClick: (Int) -> Unit) {
+fun ListScreen(state: ListState, onProductClick: (Int) -> Unit, onRetry: () -> Unit) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Каталог") }) },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (state) {
+                is ListState.Error -> ErrorView(state.message, onRetry)
                 ListState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                 is ListState.Content -> Column {
                     Text(

@@ -29,7 +29,7 @@ import coil3.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(state: DetailState, onBack: () -> Unit) {
+fun DetailScreen(state: DetailState, onBack: () -> Unit, onRetry: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -44,6 +44,7 @@ fun DetailScreen(state: DetailState, onBack: () -> Unit) {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (state) {
+                is DetailState.Error -> ErrorView(state.message, onRetry)
                 DetailState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                 is DetailState.Content -> {
                     val product = state.product

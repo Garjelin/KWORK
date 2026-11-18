@@ -19,7 +19,7 @@ import com.demo.catalog.CatalogApp
 private fun CreationExtras.app() = this[APPLICATION_KEY] as CatalogApp
 
 @Composable
-fun CatalogNavHost() {
+fun CatalogNavHost(darkTheme: Boolean, onDarkThemeChange: (Boolean) -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "list") {
         composable("list") {
@@ -31,6 +31,8 @@ fun CatalogNavHost() {
                 state = state,
                 onProductClick = { navController.navigate("detail/$it") },
                 onRetry = vm::load,
+                darkTheme = darkTheme,
+                onDarkThemeChange = onDarkThemeChange,
             )
         }
         composable(
@@ -45,6 +47,8 @@ fun CatalogNavHost() {
                 state = state,
                 onBack = { navController.popBackStack() },
                 onRetry = vm::load,
+                darkTheme = darkTheme,
+                onDarkThemeChange = onDarkThemeChange,
             )
         }
     }

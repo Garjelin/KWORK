@@ -59,7 +59,7 @@ fun ListScreen(
                 },
             ) },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        Box(Modifier.fillMaxSize().padding(padding).testTag("list_root")) {
             when (state) {
                 is ListState.Error -> ErrorView(state.message, onRetry)
                 ListState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))

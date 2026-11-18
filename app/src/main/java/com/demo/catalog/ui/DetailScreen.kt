@@ -51,7 +51,7 @@ fun DetailScreen(state: DetailState, onBack: () -> Unit, onRetry: () -> Unit,
             )
         },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        Box(Modifier.fillMaxSize().padding(padding).testTag("detail_root")) {
             when (state) {
                 is DetailState.Error -> ErrorView(state.message, onRetry)
                 DetailState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -75,7 +75,7 @@ fun DetailScreen(state: DetailState, onBack: () -> Unit, onRetry: () -> Unit,
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(top = 4.dp),
+                                modifier = Modifier.padding(top = 4.dp).testTag("detail_price"),
                             )
                             Text(
                                 "${product.category} · ★ ${product.rating}",

@@ -17,6 +17,7 @@ sealed interface ListState {
         val topTitle: String,
         val query: String = "",
         val category: String? = null,
+        val offline: Boolean = false,
     ) : ListState {
         val categories: List<String> get() = products.map { it.category }.distinct().sorted()
         val visible: List<Product>
@@ -48,9 +49,9 @@ class ListViewModel(private val repository: ProductRepository) : ViewModel() {
         _state.value = ListState.Loading
         viewModelScope.launch {
             _state.value = try {
-                val products = repository.getProducts()
-                val top = products.maxByOrNull { it.rating } ?: throw EmptyCatalogException()
-                ListState.Content(products, top.title)
+                val catalog = repository.getProducts()
+                val top = catalog.products.maxByOrNull { it.rating } ?: throw EmptyCatalogException()
+                ListState.Content(catalog.products, top.title, offline = catalog.offline)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

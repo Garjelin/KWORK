@@ -1,13 +1,15 @@
 package com.demo.catalog
 
+import com.demo.catalog.data.Catalog
 import com.demo.catalog.data.Product
 import com.demo.catalog.data.ProductRepository
 
 class FakeProductRepository(
     @Volatile var products: List<Product> = emptyList(),
     @Volatile var error: Throwable? = null,
+    @Volatile var offline: Boolean = false,
 ) : ProductRepository {
-    override suspend fun getProducts(): List<Product> = error?.let { throw it } ?: products
+    override suspend fun getProducts(): Catalog = error?.let { throw it } ?: Catalog(products, offline)
     override suspend fun getProduct(id: Int): Product =
         error?.let { throw it } ?: products.first { it.id == id }
 }

@@ -11,7 +11,7 @@ class CatalogApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        repository = NetworkProductRepository.create()
+        repository = NetworkProductRepository.create(this)
         themeSettings = ThemeSettings(getSharedPreferences("settings", MODE_PRIVATE))
     }
 }

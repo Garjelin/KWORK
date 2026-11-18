@@ -23,6 +23,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -62,6 +64,7 @@ fun ListScreen(
                 is ListState.Error -> ErrorView(state.message, onRetry)
                 ListState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                 is ListState.Content -> Column {
+                    if (state.offline) OfflineBanner()
                     Text(
                         text = "Хит: ${state.topTitle}",
                         style = MaterialTheme.typography.labelLarge,
@@ -83,6 +86,22 @@ fun ListScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OfflineBanner() {
+    Surface(
+        color = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        modifier = Modifier.fillMaxWidth().testTag("offline_banner"),
+    ) {
+        Text(
+            "Офлайн · показаны сохранённые данные",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 8.dp),
+        )
     }
 }
 

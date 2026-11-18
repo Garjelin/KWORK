@@ -47,4 +47,49 @@ class ListViewModelTest {
         assertEquals(2, state.products.size)
         assertEquals("Best", state.topTitle)
     }
+
+    private fun loadedViewModel(): ListViewModel {
+        val items = listOf(
+            product(1, "Red Lipstick").copy(category = "beauty"),
+            product(2, "Red Apple").copy(category = "groceries"),
+            product(3, "Green Apple").copy(category = "groceries"),
+        )
+        return ListViewModel(FakeProductRepository(products = items))
+    }
+
+    private fun ListViewModel.visibleTitles() = (state.value as ListState.Content).visible.map { it.title }
+
+    @Test
+    fun `search matches title ignoring case`() {
+        val vm = loadedViewModel()
+        vm.onQueryChange("  APPLE ")
+        assertEquals(listOf("Red Apple", "Green Apple"), vm.visibleTitles())
+    }
+
+    @Test
+    fun `category filter narrows the list`() {
+        val vm = loadedViewModel()
+        vm.onCategorySelect("beauty")
+        assertEquals(listOf("Red Lipstick"), vm.visibleTitles())
+    }
+
+    @Test
+    fun `search and category work together and reset with all`() {
+        val vm = loadedViewModel()
+        vm.onCategorySelect("groceries")
+        vm.onQueryChange("red")
+        assertEquals(listOf("Red Apple"), vm.visibleTitles())
+
+        vm.onCategorySelect(null)
+        vm.onQueryChange("")
+        assertEquals(3, vm.visibleTitles().size)
+        assertEquals(listOf("beauty", "groceries"), (vm.state.value as ListState.Content).categories)
+    }
+
+    @Test
+    fun `search without matches gives empty list`() {
+        val vm = loadedViewModel()
+        vm.onQueryChange("zzz")
+        assertTrue(vm.visibleTitles().isEmpty())
+    }
 }

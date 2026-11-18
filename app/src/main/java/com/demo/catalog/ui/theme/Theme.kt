@@ -12,6 +12,7 @@ private val LightColors = lightColorScheme(
     onPrimaryContainer = Color(0xFF0D1512),
     background = Color(0xFFF7FAF2),
     surface = Color(0xFFF7FAF2),
+    surfaceContainerHighest = Color(0xFFE4EBD9),
 )
 
 @Composable
